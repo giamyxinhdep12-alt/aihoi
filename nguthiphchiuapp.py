@@ -286,14 +286,11 @@ if start:
 
         # QUAN TRỌNG:
         # Dùng components.html thay vì st.markdown
-        components.html(
-            race_html,
-            height=(
-                30
-                + len(names) * 75
-            ),
-            scrolling=False
-        )
+       components.html(
+    race_html,
+    height=520,
+    scrolling=False
+)
 
         time.sleep(0.08)
 
