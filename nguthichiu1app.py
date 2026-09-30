@@ -264,10 +264,7 @@ if start:
 
         html += "</div>"
 
-        race.markdown(
-            html,
-            unsafe_allow_html=True
-        )
+        race.markdown(html, unsafe_allow_html=True)
 
         time.sleep(0.09)
 
