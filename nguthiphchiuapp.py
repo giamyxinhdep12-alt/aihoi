@@ -60,12 +60,11 @@ start = st.button(
     "🚀🏁 BẮT ĐẦU ĐUA! 🏁🚀",
     use_container_width=True
 )
-
 if start:
 
-    # -------------------------
+    # =========================
     # ĐẾM NGƯỢC
-    # -------------------------
+    # =========================
 
     count = st.empty()
 
@@ -88,14 +87,20 @@ if start:
 
     count.empty()
 
-    # -------------------------
-    # VỊ TRÍ
-    # -------------------------
+    # =========================
+    # TẠO TỐC ĐỘ NGẪU NHIÊN
+    # =========================
 
-    positions = [0 for _ in names]
-    finished = []
+    speeds = []
 
-    board = st.empty()
+    for i in range(len(names)):
+        speeds.append(
+            round(random.uniform(0.8, 2.2), 2)
+        )
+
+    # =========================
+    # TẠO CÁC LÀN ĐUA
+    # =========================
 
     colors = [
         "#ff6b81",
@@ -112,265 +117,225 @@ if start:
         "#339af0"
     ]
 
-    # =========================
-    # VÒNG ĐUA
-    # =========================
+    lanes = ""
 
-    while len(finished) < len(names):
+    for i, name in enumerate(names):
 
-        for i in range(len(names)):
+        safe_name = html.escape(name)
 
-            if i in finished:
-                continue
+        lanes += f"""
+        <div class="lane"
+             style="background:{colors[i % len(colors)]};">
 
-            positions[i] += random.randint(1, 5)
+            <div class="name">
+                {i + 1}. {safe_name}
+            </div>
 
-            # thỉnh thoảng tăng tốc
-            if random.random() < 0.08:
-                positions[i] += random.randint(4, 9)
+            <div class="road">
 
-            if positions[i] >= 100:
-                positions[i] = 100
-                finished.append(i)
-
-        # -------------------------
-        # TẠO HTML SÂN ĐUA
-        # -------------------------
-
-        lanes = ""
-
-        for i, name in enumerate(names):
-
-            safe_name = html.escape(name)
-
-            # vị trí con vịt
-            pos = max(0, min(positions[i], 100))
-
-            lanes += f"""
-            <div class="lane"
-                 style="background:{colors[i % len(colors)]};">
-
-                <div class="name">
-                    {i + 1}. {safe_name}
+                <div
+                    class="duck"
+                    id="duck{i}"
+                    style="left:0%;">
+                    🦆
                 </div>
 
-                <div class="road">
-
-                    <div
-                        class="duck"
-                        style="left:{pos}%;">
-                        🦆
-                    </div>
-
-                    <div class="finish">
-                        🏁
-                    </div>
-
+                <div class="finish">
+                    🏁
                 </div>
 
-            </div>
-            """
-
-        # -------------------------
-        # TOÀN BỘ SÂN
-        # -------------------------
-
-        race_html = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-
-        <style>
-
-        * {{
-            box-sizing:border-box;
-        }}
-
-        body {{
-            margin:0;
-            padding:10px;
-            background:transparent;
-            font-family:Arial,sans-serif;
-        }}
-
-        .race {{
-            background:#36a852;
-            padding:14px;
-            border-radius:28px;
-            border:7px solid white;
-            box-shadow:0 10px 30px rgba(0,0,0,.2);
-        }}
-
-        .lane {{
-            height:68px;
-            margin-bottom:7px;
-            border-radius:17px;
-            position:relative;
-            overflow:hidden;
-            border:3px solid white;
-        }}
-
-        .name {{
-            position:absolute;
-            left:10px;
-            top:20px;
-            width:105px;
-            color:white;
-            font-weight:900;
-            font-size:14px;
-            z-index:10;
-            text-shadow:2px 2px 3px rgba(0,0,0,.6);
-        }}
-
-        .road {{
-            position:absolute;
-            left:120px;
-            right:45px;
-            top:7px;
-            bottom:7px;
-            border-radius:14px;
-            border:3px solid white;
-
-            background:
-                repeating-linear-gradient(
-                    90deg,
-                    #eeeeee 0px,
-                    #eeeeee 28px,
-                    #d0d0d0 28px,
-                    #d0d0d0 56px
-                );
-        }}
-
-        .duck {{
-            position:absolute;
-            top:2px;
-            transform:translateX(-50%);
-            font-size:43px;
-            z-index:5;
-            white-space:nowrap;
-        }}
-
-        .finish {{
-            position:absolute;
-            right:-3px;
-            top:-3px;
-            bottom:-3px;
-            width:40px;
-            background:
-                repeating-conic-gradient(
-                    #111 0deg 90deg,
-                    white 90deg 180deg
-                );
-            background-size:20px 20px;
-            border-left:4px solid white;
-            z-index:8;
-            font-size:25px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }}
-
-        </style>
-
-        </head>
-
-        <body>
-
-            <div class="race">
-                {lanes}
-            </div>
-
-        </body>
-        </html>
-        """
-
-        # QUAN TRỌNG:
-        # Dùng components.html thay vì st.markdown
-       components.html(
-    race_html,
-    height=520,
-    scrolling=False
-)
-
-        time.sleep(0.08)
-
-    # =========================
-    # KẾT QUẢ
-    # =========================
-
-    winner = names[finished[0]]
-
-    st.markdown(
-        f"""
-        <div style="
-            text-align:center;
-            background:linear-gradient(
-                90deg,
-                #ffe066,
-                #ff922b,
-                #ff6b6b
-            );
-            padding:25px;
-            border-radius:25px;
-            margin-top:25px;
-        ">
-
-            <div style="font-size:65px;">
-                🏆
-            </div>
-
-            <div style="
-                font-size:32px;
-                font-weight:900;
-            ">
-                {html.escape(winner)}
-            </div>
-
-            <div style="font-size:21px;">
-                🎉 VỀ ĐÍCH ĐẦU TIÊN! 🎉
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True
+        """
+
+    # =========================
+    # HTML + JAVASCRIPT
+    # =========================
+
+    race_html = f"""
+    <!DOCTYPE html>
+
+    <html>
+
+    <head>
+
+    <style>
+
+    * {{
+        box-sizing:border-box;
+    }}
+
+    body {{
+        margin:0;
+        padding:8px;
+        font-family:Arial,sans-serif;
+    }}
+
+    .race {{
+        background:#36a852;
+        padding:12px;
+        border-radius:25px;
+        border:6px solid white;
+        box-shadow:0 10px 25px rgba(0,0,0,.2);
+    }}
+
+    .lane {{
+        height:58px;
+        margin-bottom:5px;
+        border-radius:15px;
+        position:relative;
+        overflow:hidden;
+        border:2px solid white;
+    }}
+
+    .name {{
+        position:absolute;
+        left:8px;
+        top:17px;
+        width:105px;
+        color:white;
+        font-weight:900;
+        font-size:13px;
+        z-index:10;
+        text-shadow:2px 2px 3px #555;
+    }}
+
+    .road {{
+        position:absolute;
+        left:115px;
+        right:40px;
+        top:5px;
+        bottom:5px;
+        border-radius:12px;
+        border:2px solid white;
+
+        background:
+        repeating-linear-gradient(
+            90deg,
+            #eeeeee 0px,
+            #eeeeee 25px,
+            #cccccc 25px,
+            #cccccc 50px
+        );
+    }}
+
+    .duck {{
+        position:absolute;
+        top:1px;
+        font-size:38px;
+        z-index:5;
+        transition:none;
+    }}
+
+    .finish {{
+        position:absolute;
+        right:-2px;
+        top:-2px;
+        bottom:-2px;
+        width:36px;
+
+        background:
+        repeating-conic-gradient(
+            #111 0deg 90deg,
+            white 90deg 180deg
+        );
+
+        background-size:18px 18px;
+
+        z-index:8;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        font-size:22px;
+    }}
+
+    </style>
+
+    </head>
+
+    <body>
+
+    <div class="race">
+
+        {lanes}
+
+    </div>
+
+
+    <script>
+
+    const speeds = {speeds};
+
+    const ducks = [];
+
+    for (let i = 0; i < {len(names)}; i++) {{
+
+        ducks.push({{
+            element: document.getElementById("duck" + i),
+            position: 0,
+            speed: speeds[i]
+        }});
+
+    }}
+
+
+    function race() {{
+
+        let stillRunning = false;
+
+        ducks.forEach((duck) => {{
+
+            if (duck.position < 93) {{
+
+                stillRunning = true;
+
+                // tốc độ chính
+                duck.position += duck.speed * 0.15;
+
+                // đôi lúc tăng tốc
+                if (Math.random() < 0.01) {{
+                    duck.position += Math.random() * 1.5;
+                }}
+
+                if (duck.position > 93) {{
+                    duck.position = 93;
+                }}
+
+                duck.element.style.left =
+                    duck.position + "%";
+            }}
+
+        }});
+
+
+        if (stillRunning) {{
+            requestAnimationFrame(race);
+        }}
+
+    }}
+
+
+    // BẮT ĐẦU CHẠY
+    requestAnimationFrame(race);
+
+    </script>
+
+    </body>
+
+    </html>
+    """
+
+    # =========================
+    # HIỂN THỊ SÂN
+    # =========================
+
+    components.html(
+        race_html,
+        height=(
+            35 + len(names) * 65
+        ),
+        scrolling=False
     )
-
-    # =========================
-    # TOP 3
-    # =========================
-
-    st.subheader("🏆 KẾT QUẢ")
-
-    medals = ["🥇", "🥈", "🥉"]
-
-    for rank, index in enumerate(finished):
-
-        name = names[index]
-
-        if rank < 3:
-
-            st.markdown(
-                f"""
-                <div style="
-                    background:white;
-                    padding:15px;
-                    margin:8px 0;
-                    border-radius:15px;
-                    font-size:24px;
-                    text-align:center;
-                    box-shadow:0 4px 12px rgba(0,0,0,.12);
-                ">
-                    {medals[rank]}
-                    <b>{html.escape(name)}</b>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        else:
-
-            st.write(
-                f"**{rank + 1}.** 🦆 {name}"
-            )
-
-    st.balloons()
